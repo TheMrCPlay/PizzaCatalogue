@@ -17,9 +17,24 @@ ingridient_index:
   controller: App\Controller\IngridientController::index
   methods: GET
 
+ingridient_add:
+  path: /ingridient/add
+  controller: App\Controller\IngridientController::add
+  methods: POST
+
+ingridient_update:
+  path: /ingridient/{id}/update
+  controller: App\Controller\IngridientController::update
+  methods: POST
+
+pizza_addIngridient:
+  path: /pizza/{id}/ingridient/add
+  controller: App\Controller\PizzaController::addIngridient
+  methods: POST
+
 pizza_appendIngridient:
-  path: /pizza/{id}
-  controller: App\Controller\PizzaController::appendIngridient
+  path: /pizza/{id}/ingridient/append
+  controller: App\Controller\PizzaController::apendIngridient
   methods: POST
 
 pizza_info:

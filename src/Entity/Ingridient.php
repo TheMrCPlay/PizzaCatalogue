@@ -14,17 +14,6 @@ class Ingridient
 {
 
     /**
-     * Many Ingridients have Many Pizzas.
-     * @ORM\ManyToMany(targetEntity="Pizza", mappedBy="ingridients")
-     */
-    private $pizzas;
-
-    public function __construct()
-    {
-        $this->pizzas = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -40,11 +29,6 @@ class Ingridient
      * @ORM\Column(type="float")
      */
     private $Price;
-
-    public function getPizzas(): Collection
-    {
-        return $this->pizzas;
-    }
 
     public function getId(): ?int
     {

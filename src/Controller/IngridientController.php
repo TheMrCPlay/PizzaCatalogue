@@ -23,12 +23,12 @@ class IngridientController extends AbstractController
     {
         $entityManager = $managerRegistry->getManager();
 
-        $ingridientName = $request->query->get('name');
-        $ingridientPrise = $request->query->get('price');
+        $ingridientName = $request->get('name');
+        $ingridientPrice = $request->get('price');
 
         $ingridient = new Ingridient();
         $ingridient->setName($ingridientName);
-        $ingridient->setPrice($ingridientPrise);
+        $ingridient->setPrice($ingridientPrice);
 
         $entityManager->persist($ingridient);
         $entityManager->flush();
@@ -38,8 +38,43 @@ class IngridientController extends AbstractController
         ]);
     }
 
-    public function remove(): JsonResponse
+    public function update(ManagerRegistry $managerRegistry, Request $request, Ingridient $ingridient): JsonResponse
     {
-        return $this->json([]);
+        $entityManager = $managerRegistry->getManager();
+
+        $ingridientName = $request->get('name');
+        $ingridientPrice = $request->get('price');
+
+        if (!$ingridientName) {
+            $ingridientName = $ingridient->getName();
+        }
+
+        if (!$ingridientPrice) {
+            $ingridientPrice = $ingridient->getPrice();
+        }
+
+        $ingridient->setName($ingridientName);
+        $ingridient->setPrice($ingridientPrice);
+
+        $entityManager->persist($ingridient);
+        $entityManager->flush();
+
+        return $this->json([
+            'message' => 'Ingridient info updated',
+            'id' => $ingridient->getId()
+        ]);
+    }
+
+    public function remove(ManagerRegistry $managerRegistry, Ingridient $ingridient): JsonResponse
+    {
+        $entityManager = $managerRegistry->getManager();
+
+        $entityManager->remove($ingridient);
+        $entityManager->flush();
+
+        // todo implement
+        return $this->json([
+            'message' => 'Ingridient removed'
+        ]);
     }
 }

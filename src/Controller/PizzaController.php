@@ -46,7 +46,7 @@ class PizzaController extends AbstractController
      * @param Pizza $pizza
      * @return JsonResponse
      */
-    public function appendIngridient(ManagerRegistry $managerRegistry, Request $request, Pizza $pizza): JsonResponse
+    public function addIngridient(ManagerRegistry $managerRegistry, Request $request, Pizza $pizza): JsonResponse
     {
         $entityManager = $managerRegistry->getManager();
 
@@ -64,13 +64,32 @@ class PizzaController extends AbstractController
         $entityManager->flush();
 
         return $this->json([
-            'message' => 'New pizza ingridient appended',
+            'message' => 'New pizza ingridient added',
             'ingridient_id' => $ingridient->getId()
+        ]);
+    }
+
+    public function apendIngridient(PizzaCatalogue $pizzaCatalogue, Request $request, Pizza $pizza): JsonResponse
+    {
+        $ingridientId = $request->get('ingridient_id');
+
+        try {
+            $pizzaCatalogue->appendIngridientById($pizza, $ingridientId);
+        }
+        catch (\Exception $ex) {
+            return $this->json([
+                'message' => $ex->getMessage()
+            ], 400);
+        }
+
+        return $this->json([
+            'message' => 'ingridient appended'
         ]);
     }
 
     public function info(PizzaCatalogue $pizzaCatalogue, Request $request, Pizza $pizza): JsonResponse
     {
-        return $this->json($pizzaCatalogue->getPizzaFullInfo($pizza));
+        //return $this->json($pizzaCatalogue->getPizzaFullInfo($pizza));
+        return $this->json($pizza);
     }
 }
