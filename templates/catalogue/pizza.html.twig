@@ -1,0 +1,42 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+	<h1 class="text-center">{{ page_title }}</h1>
+
+	<div class="card-content-wrapper">
+		<div class="card details-content" style="width: 40rem;">
+			<div class="card-body">
+				<button type="button" class="btn btn-success">Add Pizza</button>
+
+				<table class="table">
+					<thead>
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">Price</th>
+							<th scope="col">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for pizza in pizza_list %}
+							<tr>
+								<th scope="row">{{ pizza.id }}</th>
+
+								<td>{{ pizza.name }}</td>
+								<td>{{ pizza.price }}€</td>
+								<td>
+									<a href="{{ path('details', {id: pizza.id}) }}" type="button" class="btn btn-secondary">Details</a>
+									<button type="button" class="btn btn-danger">Remove</button>
+								</td>
+							</tr>
+						{% endfor %}
+
+					</tbody>
+				</table>
+
+			</div>
+		</div>
+
+	</div>
+{% endblock %}

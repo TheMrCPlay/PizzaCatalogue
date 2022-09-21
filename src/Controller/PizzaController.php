@@ -10,15 +10,37 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Pizza;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Ingridient;
+use Symfony\Component\HttpFoundation\Response;
+use Doctrine\Common\Collections\ArrayCollection;
 
 
 class PizzaController extends AbstractController
 {
-    public function index(): JsonResponse
+    public function index(ManagerRegistry $managerRegistry, PizzaCatalogue $pizzaCatalogue): Response
     {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/PizzaController.php',
+        /**
+         * 
+         * @var ArrayCollection $pizzaList
+         */
+        $pizzaList = new ArrayCollection($managerRegistry->getRepository(Pizza::class)->findAll());
+
+        $pizzaList = $pizzaList->map(function (Pizza $pizza) use ($pizzaCatalogue) {
+            return $pizzaCatalogue->getPizzaFullInfo($pizza);
+        });
+
+        return $this->render('catalogue/pizza.html.twig', [
+            'page_title' => 'Pizza Catalogue',
+            'pizza_list' => $pizzaList
+        ]);
+    }
+
+    public function pizzaDetails(PizzaCatalogue $pizzaCatalogue, Pizza $pizza): Response
+    {
+        $ingridients = $pizzaCatalogue->getPizzaIngridients($pizza);
+
+        return $this->render('catalogue/details.html.twig', [
+            'page_title' => sprintf('"%s" details', $pizza->getName()),
+            'ingridient_list' => $ingridients,
         ]);
     }
 

@@ -21,18 +21,26 @@ class PizzaCatalogue
         $this->managerRegistry = $managerRegistry;
     }
 
-    public function getPizzaFullInfo(Pizza $pizza): float
+    public function getPizzaFullInfo(Pizza $pizza): array
     {
         $ingridientPriceCost = 0;
 
-        $ingridients = $pizza->getIngridients();
+        $ingridients = $this->getPizzaIngridients($pizza);
 
         foreach ($ingridients as $ingridient) {
             $ingridientPriceCost += $ingridient->getPrice();
         }
 
-        //return $this->serializer->serialize($pizza, 'json');
-        return $ingridientPriceCost + ($ingridientPriceCost * 0.5);
+        return [
+            'id' => $pizza->getId(),
+            'name' => $pizza->getName(),
+            'price' => $ingridientPriceCost + ($ingridientPriceCost * 0.5)
+        ];
+    }
+
+    public function getPizzaIngridients(Pizza $pizza): array
+    {
+        return $pizza->getIngridients()->toArray();
     }
 
     public function appendIngridientById(Pizza $pizza, int $ingridientId): void
