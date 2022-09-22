@@ -8,73 +8,122 @@ use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Ingridient;
 use Symfony\Component\HttpFoundation\Request;
+use App\Form\Type\IngridientType;
+use Symfony\Component\HttpFoundation\Response;
+use App\Service\PizzaCatalogue;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class IngridientController extends AbstractController
 {
-    public function index(): JsonResponse
+    private $requestStack;
+
+    public function __construct(RequestStack $requestStack)
     {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/IngridientController.php',
+        $this->requestStack = $requestStack;
+    }
+
+    public function index(ManagerRegistry $managerRegistry): Response
+    {
+        $this->requestStack->getSession()->remove('pizza_id_details');
+        $this->requestStack->getSession()->remove('pizza_id_append_list');
+
+        $ingridientList = $managerRegistry->getRepository(Ingridient::class)->findAll();
+
+        return $this->render('catalogue/ingridient/list.html.twig', [
+            'page_title' => 'List of all ingridients',
+            'ingridient_list' => $ingridientList
         ]);
     }
 
-    public function add(ManagerRegistry $managerRegistry, Request $request): JsonResponse
+    public function new (Request $request, PizzaCatalogue $pizzaCatalogue): Response
     {
-        $entityManager = $managerRegistry->getManager();
-
-        $ingridientName = $request->get('name');
-        $ingridientPrice = $request->get('price');
-
         $ingridient = new Ingridient();
-        $ingridient->setName($ingridientName);
-        $ingridient->setPrice($ingridientPrice);
 
-        $entityManager->persist($ingridient);
-        $entityManager->flush();
+        $form = $this->createForm(IngridientType::class , $ingridient);
 
-        return $this->json([
-            'id' => $ingridient->getId()
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $ingridient = $form->getData();
+
+            try {
+                $pizzaCatalogue->updateIngridient($ingridient);
+            }
+            catch (\Exception $ex) {
+                $this->addFlash('notice', $ex->getMessage());
+            }
+
+            $session = $this->requestStack->getSession();
+
+            if ($session->has('pizza_id_append_list')) {
+
+                return $this->redirectToRoute('ingridient_pizza_append_ingridient_list', [
+                    'id' => $session->get('pizza_id_append_list'),
+                ]);
+            }
+
+
+            return $this->redirectToRoute('ingridient_list');
+        }
+
+        return $this->renderForm('catalogue/ingridient/new.html.twig', [
+            'page_title' => 'Add new ingridient',
+            'form' => $form,
         ]);
     }
 
-    public function update(ManagerRegistry $managerRegistry, Request $request, Ingridient $ingridient): JsonResponse
+    public function update(ManagerRegistry $managerRegistry, PizzaCatalogue $pizzaCatalogue, Request $request, Ingridient $ingridient): Response
     {
-        $entityManager = $managerRegistry->getManager();
+        $form = $this->createForm(IngridientType::class , $ingridient);
 
-        $ingridientName = $request->get('name');
-        $ingridientPrice = $request->get('price');
+        $form->handleRequest($request);
 
-        if (!$ingridientName) {
-            $ingridientName = $ingridient->getName();
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $ingridient = $form->getData();
+
+            try {
+                $pizzaCatalogue->updateIngridient($ingridient);
+            }
+            catch (\Exception $ex) {
+                $this->addFlash('notice', $ex->getMessage());
+            }
+
+            $session = $this->requestStack->getSession();
+
+            if ($session->has('pizza_id_details')) {
+
+                return $this->redirectToRoute('details', [
+                    'id' => $session->get('pizza_id_details'),
+                ]);
+            }
+
+            return $this->redirectToRoute('ingridient_list');
         }
 
-        if (!$ingridientPrice) {
-            $ingridientPrice = $ingridient->getPrice();
-        }
+        $this->addFlash('notice', sprintf('Ingridient "%s" saved', $ingridient->getName()));
 
-        $ingridient->setName($ingridientName);
-        $ingridient->setPrice($ingridientPrice);
-
-        $entityManager->persist($ingridient);
-        $entityManager->flush();
-
-        return $this->json([
-            'message' => 'Ingridient info updated',
-            'id' => $ingridient->getId()
+        return $this->renderForm('catalogue/ingridient/new.html.twig', [
+            'page_title' => 'Update ingridient',
+            'form' => $form,
         ]);
     }
 
-    public function remove(ManagerRegistry $managerRegistry, Ingridient $ingridient): JsonResponse
+    public function remove(Request $request, PizzaCatalogue $pizzaCatalogue, Ingridient $ingridient): Response
     {
-        $entityManager = $managerRegistry->getManager();
+        $pizzaCatalogue->removeIngridient($ingridient);
+        $this->addFlash('notice', sprintf('"%s" removed', $ingridient->getName()));
 
-        $entityManager->remove($ingridient);
-        $entityManager->flush();
+        $session = $this->requestStack->getSession();
+        if ($session->has('pizza_id_details')) {
 
-        // todo implement
-        return $this->json([
-            'message' => 'Ingridient removed'
-        ]);
+            return $this->redirectToRoute('details', [
+                'id' => $session->get('pizza_id_details'),
+            ]);
+        }
+
+        return $this->redirectToRoute('ingridient_list');
     }
 }

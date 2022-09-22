@@ -12,37 +12,52 @@ details:
   controller: App\Controller\PizzaController::pizzaDetails
   methods: GET
 
-pizza_add:
-  path: /pizza
-  controller: App\Controller\PizzaController::add
-  methods: POST
+pizza_new:
+  path: /pizza/new
+  controller: App\Controller\PizzaController::new
+  methods: GET|POST
 
-ingridient_index:
-  path: /ingridient/{?id}
+pizza_update:
+  path: /pizza/{id}/update
+  controller: App\Controller\PizzaController::update
+  methods: GET|POST
+
+pizza_remove:
+  path: /pizza/{id}/remove
+  controller: App\Controller\PizzaController::remove
+  methods: GET
+
+ingridient_list:
+  path: /ingridient/list
   controller: App\Controller\IngridientController::index
   methods: GET
 
-ingridient_add:
-  path: /ingridient/add
-  controller: App\Controller\IngridientController::add
-  methods: POST
+ingridient_new:
+  path: /ingridient/new
+  controller: App\Controller\IngridientController::new
+  methods: GET|POST
 
 ingridient_update:
   path: /ingridient/{id}/update
   controller: App\Controller\IngridientController::update
-  methods: POST
+  methods: GET|POST
 
-pizza_addIngridient:
-  path: /pizza/{id}/ingridient/add
-  controller: App\Controller\PizzaController::addIngridient
-  methods: POST
+ingridient_remove:
+  path: /ingridient/{id}/remove
+  controller: App\Controller\IngridientController::remove
+  methods: GET
 
-pizza_appendIngridient:
-  path: /pizza/{id}/ingridient/append
+pizza_ingridient_append:
+  path: /pizza/{pizza_id}/ingridient/{ingridient_id}/append
   controller: App\Controller\PizzaController::apendIngridient
-  methods: POST
+  methods: GET
 
-pizza_info:
-  path: /pizza/{id}/info
-  controller: App\Controller\PizzaController::info
+pizza_ingridient_remove:
+  path: /pizza/{pizza_id}/ingridient/{ingridient_id}/remove
+  controller: App\Controller\PizzaController::removeIngridient
+  methods: GET
+
+ingridient_pizza_append_ingridient_list:
+  path: /pizza/{id}/ingridient/append
+  controller: App\Controller\PizzaController::pizzaAppendIngridientList
   methods: GET

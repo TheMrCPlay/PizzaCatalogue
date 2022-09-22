@@ -4,26 +4,11 @@
 
 	<h1 class="text-center">{{ page_title }}</h1>
 
-	<a href="{{ path('index') }}">&#60;&#60;Back to Pizza list</a>
-
-
 	<div class="card-content-wrapper">
 		<div class="card details-content" style="width: 40rem;">
-
 			<div class="card-body">
-				<div class="container text-center">
-					<div class="row">
-						<div class="col">
-							<h2>Ingridients</h2>
 
-						</div>
-						<div class="col">
-							<button type="button" class="btn btn-success">Add ingridient</button>
-
-						</div>
-
-					</div>
-				</div>
+				<a href="{{ path('ingridient_new') }}" type="button" class="btn btn-success">Add Ingridient</a>
 
 				<table class="table">
 					<thead>
@@ -35,20 +20,18 @@
 						</tr>
 					</thead>
 					<tbody>
+
 						{% for ingridient in ingridient_list %}
 
 							<tr>
-								<th scope="row">{{ ingridient.id }}</th>
-
+								<td scope="row">{{ ingridient.id }}</td>
 								<td>{{ ingridient.name }}</td>
-
 								<td>{{ ingridient.price }}€</td>
-
 								<td>
-									<button type="button" class="btn btn-success">Edit</button>
-									<button type="button" class="btn btn-danger">Remove</button>
+									<a href="{{ path('pizza_ingridient_append', {pizza_id: pizza_id, ingridient_id: ingridient.id}) }}" class="btn btn-secondary">Append</a>
 								</td>
 							</tr>
+
 						{% endfor %}
 
 					</tbody>

@@ -7,7 +7,23 @@
 	<div class="card-content-wrapper">
 		<div class="card details-content" style="width: 40rem;">
 			<div class="card-body">
-				<button type="button" class="btn btn-success">Add Pizza</button>
+
+				{% for message in app.flashes('warning') %}
+					<div class="alert alert-danger" role="alert">
+						{{ message }}
+					</div>
+				{% endfor %}
+
+				{% for message in app.flashes('notice') %}
+					<div class="alert alert-success" role="alert">
+						{{ message }}
+					</div>
+				{% endfor %}
+
+
+				<a href="{{ path('pizza_new') }}" type="button" class="btn btn-success">Add Pizza</a>
+				<a href="{{ path('ingridient_list') }}" type="button" class="btn btn-success">Ingridient list</a>
+
 
 				<table class="table">
 					<thead>
@@ -27,7 +43,11 @@
 								<td>{{ pizza.price }}€</td>
 								<td>
 									<a href="{{ path('details', {id: pizza.id}) }}" type="button" class="btn btn-secondary">Details</a>
-									<button type="button" class="btn btn-danger">Remove</button>
+									<a href="{{ path('pizza_update', {id: pizza.id}) }}" class="btn btn-success">Modify</a>
+
+
+									<a href="{{ path('pizza_remove', {id: pizza.id})}}" class="btn btn-danger">Remove</button>
+
 								</td>
 							</tr>
 						{% endfor %}

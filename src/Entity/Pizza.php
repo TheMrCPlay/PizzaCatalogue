@@ -6,6 +6,7 @@ use App\Repository\PizzaRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\PersistentCollection;
 
 /**
  * @ORM\Entity(repositoryClass=PizzaRepository::class)
@@ -23,11 +24,6 @@ class Pizza
      * @ORM\Column(type="string", length=255)
      */
     private $Name;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $Price;
 
     /**
      * Many Pizzas has many Ingridients 
@@ -53,6 +49,15 @@ class Pizza
         return $this;
     }
 
+    public function unsetIngridient(?Ingridient $ingridient): self
+    {
+        if ($this->ingridients->contains($ingridient)) {
+            $this->ingridients->removeElement($ingridient);
+        }
+
+        return $this;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -66,18 +71,6 @@ class Pizza
     public function setName(string $Name): self
     {
         $this->Name = $Name;
-
-        return $this;
-    }
-
-    public function getPrice(): ?string
-    {
-        return $this->Price;
-    }
-
-    public function setPrice(string $Price): self
-    {
-        $this->Price = $Price;
 
         return $this;
     }
